@@ -1,0 +1,26 @@
+.searchbar {
+  text-align: center;
+  background-color: blue;
+  padding-bottom: 16px;
+  padding-top: 16px;
+}
+
+.input {
+  width: 240px;
+  border: 1px solid rgba(33, 33, 33);
+  border-radius: 4px;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1;
+  margin-right: 16px;
+  padding: 8px 20px;
+  box-sizing: border-box;
+}
+
+.input:hover,
+.input:focus {
+  outline: transparent;
+}
+
+/* .form {   
+} */

@@ -1,0 +1,16 @@
+.galleryItem {
+  transition: box-shadow 250ms cubic-bezier(0.075, 0.82, 0.165, 1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.galleryItem:hover {
+  box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.2);
+}
+
+.galleryImage {
+  box-sizing: border-box;
+  margin: 0;
+  width: 360px;
+  height: 100%;
+}
