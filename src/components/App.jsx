@@ -70,9 +70,7 @@ export const App = () => {
       <Gallery images={images} openModal={openModal} />
       {button && <Button onClick={onClick} />}
       {modal && <Modal largeImage={largeImage} closeModal={closeModal} />}
-      {error && (
-        <ErrorMessage error="There are no images. Try again "></ErrorMessage>
-      )}
+      {error && <ErrorMessage error={error}></ErrorMessage>}
       {empty && (
         <p>
           Sorry, there are no images matching your search query. Please try
