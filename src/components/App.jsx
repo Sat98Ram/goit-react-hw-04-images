@@ -26,12 +26,12 @@ export const App = () => {
     setLoading(true);
     fetchImages(query, page)
       .then(data => {
-        setImages(prevState => [...prevState, ...data.hits]);
-        setButton(page < Math.ceil(data.totalHits / 12));
-
         if (!data.totalHits) {
           setEmpty(true);
+          return;
         }
+        setImages(prevState => [...prevState, ...data.hits]);
+        setButton(page < Math.ceil(data.totalHits / 12));
       })
       .catch(err => {
         setError(err.message);
