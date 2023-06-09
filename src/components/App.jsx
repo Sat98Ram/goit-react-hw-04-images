@@ -1,87 +1,81 @@
-import Gallery from 'ImageGallery/ImageGallery';
+import Gallery from 'components/ImageGallery/ImageGallery';
 import ErrorMessage from './ErrorMessage/ErrorMessage';
 import Modal from './Modal/Modal';
 import Searchbar from 'components/Searchbar/Searchbar';
 import fetchImages from './service/image-service';
 import css from './App.module.css';
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
 
-export class App extends Component {
-  state = {
-    query: '',
-    page: 1,
-    images: [],
-    isLoading: false,
-    button: false,
-    modal: false,
-    largeImgURL: '',
-    error: '',
-    isEmpty: false,
-  };
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState('');
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [button, setButton] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [largeImage, setLargeImage] = useState('');
+  const [error, setError] = useState('');
+  const [empty, setEmpty] = useState(false);
 
-  async componentDidUpdate(_, prevState) {
-    const { query, page } = this.state;
-    if (prevState.query !== query || prevState.page !== page) {
-      this.setState({ isLoading: true });
-      try {
-        const { hits, totalHits, error } = await fetchImages(query, page);
-        if (!totalHits || error) {
-          this.setState({ isEmpty: true });
-          return;
-        }
-        this.setState(prevState => ({
-          images: [...prevState.images, ...hits],
-          button: page < Math.ceil(totalHits / 12),
-        }));
-      } catch (error) {
-        this.setState({ error: error.message });
-      } finally {
-        this.setState({ isLoading: false });
-      }
+  useEffect(() => {
+    if (!query) {
+      return;
     }
-  }
+    setLoading(true);
+    fetchImages(query, page)
+      .then(data => {
+        setImages(prevState => [...prevState, ...data.hits]);
+        setButton(page < Math.ceil(data.totalHits / 12));
+      })
+      .catch(err => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [query, page]);
 
-  onSubmit = query => {
-    this.setState({ query, page: 1, images: [], error: '', button: false });
+  const onSubmit = query => {
+    setQuery(query);
+    setPage(1);
+    setImages([]);
+    setError('');
+    setButton(false);
+    setEmpty(false);
   };
 
-  onClick = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }));
+  const onClick = () => {
+    setPage(prevState => prevState + 1);
   };
 
-  openModal = largeImgURL => {
-    console.log(largeImgURL);
-    this.setState({ modal: true, largeImgURL });
+  const openModal = largeImgURL => {
+    setLargeImage(largeImgURL);
+    setModal(true);
   };
 
-  closeModal = () => {
-    this.setState({ modal: false, largeImgURL: '' });
+  const closeModal = () => {
+    setModal(false);
+    setLargeImage('');
   };
 
-  render() {
-    const { images, button, modal, largeImgURL, isLoading, error, isEmpty } =
-      this.state;
-    return (
-      <div className={css.container}>
-        <Searchbar onSubmit={this.onSubmit} />
-        <Gallery images={images} openModal={this.openModal} />
-        {button && <Button onClick={this.onClick} />}
-        {modal && (
-          <Modal largeImage={largeImgURL} closeModal={this.closeModal} />
-        )}
-        {error && (
-          <ErrorMessage error="There are no images. Try again "></ErrorMessage>
-        )}
-        {isEmpty && (
-          <p>
-            'Sorry, there are no images matching your search query. Please try
-            again.'
-          </p>
-        )}
-        {isLoading && <Loader />}
-      </div>
-    );
-  }
-}
+  return (
+    <div className={css.container}>
+      <Searchbar onSubmit={onSubmit} />
+      <Gallery images={images} openModal={openModal} />
+      {button && <Button onClick={onClick} />}
+      {modal && <Modal largeImage={largeImage} closeModal={closeModal} />}
+      {error && (
+        <ErrorMessage error="There are no images. Try again "></ErrorMessage>
+      )}
+      {empty && (
+        <p>
+          Sorry, there are no images matching your search query. Please try
+          again.
+        </p>
+      )}
+      {loading && <Loader />}
+    </div>
+  );
+};
