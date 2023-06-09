@@ -28,6 +28,10 @@ export const App = () => {
       .then(data => {
         setImages(prevState => [...prevState, ...data.hits]);
         setButton(page < Math.ceil(data.totalHits / 12));
+
+        if (!data.totalHits) {
+          setEmpty(true);
+        }
       })
       .catch(err => {
         setError(err.message);
